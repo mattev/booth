@@ -78,6 +78,12 @@ def main():
     elif cmd == "unmute":
         MUTE.unlink(missing_ok=True)
         print("🔊 Booth unmuted")
+    elif cmd == "key":
+        if len(sys.argv) < 3:
+            print("usage: booth key <ANTHROPIC_API_KEY>")
+            return 2
+        config.set_field("anthropic_api_key", sys.argv[2])
+        print("🔑 API key saved to config (daemon will use it regardless of shell env)")
     elif cmd == "status":
         cfg = config.load()
         pid = _running()

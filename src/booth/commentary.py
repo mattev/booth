@@ -12,7 +12,7 @@ import re
 import urllib.error
 import urllib.request
 
-from . import personas
+from . import config, personas
 
 MODEL_FAST = "claude-haiku-4-5"
 MODEL_BIG = "claude-sonnet-4-6"
@@ -25,9 +25,14 @@ SCHEMA_HINT = (
 )
 
 
+def _resolve_key():
+    """Config key wins over the env var: detached daemons often inherit a stale env."""
+    return config.load().anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+
+
 def call(events, pack="giants", memory="", big_moment=False, chatty="lively"):
     """Generate booth banter for a batch of events. Falls back to templates on any error."""
-    key = os.environ.get("ANTHROPIC_API_KEY")
+    key = _resolve_key()
     if not key:
         return _template(events)
     try:

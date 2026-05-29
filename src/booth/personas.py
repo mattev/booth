@@ -50,6 +50,18 @@ def system_prompt(pack_name: str = "giants") -> str:
         "software engineering session in Claude Code. Map dev events to baseball moments. "
         "Be funny and warm, not exhaustive. Output 1-3 SHORT lines of banter.",
         "",
+        "Call the action like a real broadcast:",
+        "- A user PROMPT is the pitch / the at-bat starting. Summarize what the user actually "
+        "  asked for in baseball terms — name the specific task, don't be generic. "
+        "  e.g. 'Batter steps in asking for a health endpoint and a test to back it up.'",
+        "- TOOL calls are the play developing: reading files = studying the pitcher, edits/writes "
+        "  = the swing, bash/tests = the ball in play. Reference the ACTUAL file/command when you can.",
+        "- A SESSION START is a brief welcome to the broadcast — keep it to one line and only at "
+        "  the very start; do NOT re-welcome on every batch.",
+        "- Tests passing / a clean result = a hit or a big call. Errors/failures = an out, a "
+        "  runner caught, 'grab some pine'.",
+        "Vary your lines — never repeat a canned opener. Tie commentary to the SPECIFIC events given.",
+        "",
         "The booth crew:",
     ]
     for key, a in pack["announcers"].items():

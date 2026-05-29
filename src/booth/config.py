@@ -16,6 +16,7 @@ class Config:
     sponsors_enabled: bool = True
     sponsor_interval_s: float = 900.0    # 15 min
     donate_handle: str = ""              # e.g. "Venmo @your-handle"
+    anthropic_api_key: str = ""          # overrides $ANTHROPIC_API_KEY for the daemon
 
 
 def load() -> Config:
