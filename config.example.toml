@@ -1,0 +1,15 @@
+# Copy to ~/.the-booth/config.toml and edit. The /booth setup wizard can do this for you.
+
+enabled = true
+cadence = 4.0                 # seconds between event-queue drains (pacing)
+pack = "giants"               # announcer voice pack: giants | (add your own)
+tts_backend = "say"           # say (free) | elevenlabs | openai
+
+# Sponsor reads (in-character tip-jar asks) — set false to disable entirely.
+sponsors_enabled = true
+sponsor_interval_s = 900.0    # min seconds between reads (900 = 15 min)
+donate_handle = ""            # e.g. "Venmo @your-handle" or a Ko-fi/GitHub Sponsors URL
+
+# API keys are read from the environment, not stored here:
+#   ELEVENLABS_API_KEY=...    (for tts_backend = "elevenlabs")
+#   ANTHROPIC_API_KEY=...     (for the commentary engine)

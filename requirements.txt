@@ -1,0 +1,3 @@
+anthropic>=0.40
+# Premium TTS (optional; free tier uses macOS `say`):
+# elevenlabs>=1.0

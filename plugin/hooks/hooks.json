@@ -1,0 +1,20 @@
+{
+  "comment": "The engine. Each event is piped as JSON on stdin to booth-hook, which just enqueues and exits fast (~20ms). The booth-daemon does the heavy lifting on its own clock.",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/../src/booth/hook_entry.sh session_start" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/../src/booth/hook_entry.sh prompt" }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "*", "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/../src/booth/hook_entry.sh pre_tool" }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "*", "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/../src/booth/hook_entry.sh post_tool" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/../src/booth/hook_entry.sh stop" }] }
+    ]
+  }
+}

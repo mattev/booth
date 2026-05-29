@@ -1,0 +1,7 @@
+{
+  "name": "the-booth",
+  "version": "0.0.1",
+  "description": "Live audio play-by-play of your Claude Code session, called by a three-person broadcast booth.",
+  "author": { "name": "mevered" },
+  "hooks": "./hooks/hooks.json"
+}
