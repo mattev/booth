@@ -84,6 +84,10 @@ def main():
             return 2
         config.set_field("anthropic_api_key", sys.argv[2])
         print("🔑 API key saved to config (daemon will use it regardless of shell env)")
+    elif cmd == "eval":
+        from . import eval as _eval
+        sys.argv = [sys.argv[0]] + sys.argv[2:]   # hand remaining args to the eval parser
+        return _eval.main()
     elif cmd == "status":
         cfg = config.load()
         pid = _running()

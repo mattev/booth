@@ -9,6 +9,7 @@ Returns: list[{"speaker": str, "text": str}]
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 
@@ -32,22 +33,46 @@ def _resolve_key():
 
 def call(events, pack="giants", memory="", big_moment=False, chatty="lively"):
     """Generate booth banter for a batch of events. Falls back to templates on any error."""
+    return generate(events, pack, memory, big_moment, chatty)["lines"]
+
+
+def generate(events, pack="giants", memory="", big_moment=False, chatty="lively", model=None):
+    """Like call(), but returns a result dict with metadata for evals/diagnostics:
+    {lines, model, fallback, error, input_tokens, output_tokens, latency_s}.
+    `model` overrides the default fast/big choice (used by the eval harness).
+    """
     key = _resolve_key()
+    chosen = model or (MODEL_BIG if big_moment else MODEL_FAST)
+    # Nothing happened this tick — say nothing. (No filler "welcome to the ballpark".)
+    if not events:
+        return _result([], chosen, fallback=False)
     if not key:
-        return _template(events)
+        return _result(_template(events), chosen, fallback=True, error="no api key")
+    t0 = time.time()
     try:
-        return _llm(events, pack, memory, big_moment, chatty, key)
-    except (urllib.error.URLError, KeyError, ValueError, TimeoutError):
-        return _template(events)
+        lines, usage = _llm_raw(events, pack, memory, chatty, key, chosen)
+        return _result(lines, chosen, fallback=False,
+                       latency_s=time.time() - t0,
+                       in_tok=usage.get("input_tokens", 0),
+                       out_tok=usage.get("output_tokens", 0))
+    except (urllib.error.URLError, KeyError, ValueError, TimeoutError) as e:
+        return _result(_template(events), chosen, fallback=True,
+                       error=str(e)[:120], latency_s=time.time() - t0)
 
 
-def _llm(events, pack, memory, big_moment, chatty, key):
+def _result(lines, model, fallback, error=None, latency_s=0.0, in_tok=0, out_tok=0):
+    return {"lines": lines, "model": model, "fallback": fallback, "error": error,
+            "input_tokens": in_tok, "output_tokens": out_tok, "latency_s": latency_s}
+
+
+def _llm_raw(events, pack, memory, chatty, key, model):
+    """Make the API call. Returns (lines, usage_dict). Raises on transport/parse errors."""
     system = personas.system_prompt(pack) + (
         "\n\nBe LIVELY — call most plays." if chatty == "lively"
         else "\n\nBe SELECTIVE — only call notable moments; otherwise return []."
     )
     body = {
-        "model": MODEL_BIG if big_moment else MODEL_FAST,
+        "model": model,
         "max_tokens": 320,
         "system": [{
             "type": "text",
@@ -69,7 +94,7 @@ def _llm(events, pack, memory, big_moment, chatty, key):
     with urllib.request.urlopen(req, timeout=20) as resp:
         data = json.loads(resp.read())
     text = "".join(b.get("text", "") for b in data.get("content", []))
-    return _parse(text)
+    return _parse(text), data.get("usage", {})
 
 
 def _parse(text):

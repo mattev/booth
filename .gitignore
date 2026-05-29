@@ -6,3 +6,5 @@ venv/
 # local runtime state (event queue, generated config)
 .the-booth/
 config.toml
+# eval outputs (keep the harness + scenarios, not the run artifacts)
+evals/*.csv
