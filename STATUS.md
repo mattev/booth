@@ -16,7 +16,11 @@ play-by-play" experience works and is measured at ~4.7 (Haiku) / ~4.9 (Sonnet) o
 What's **done and shipped**:
 - ✅ End-to-end pipeline: Claude Code hooks → event queue → daemon → Claude API → 3-voice `say` TTS.
 - ✅ Real LLM commentary that summarizes your prompt as "the pitch" and calls the plays. Template fallback if no key.
-- ✅ `booth` control CLI: `on / off / mute / unmute / status / key / eval`.
+- ✅ `booth` control CLI: `on / off / mute / unmute / status / setup / key / eval`.
+- ✅ **M2 (partial): ElevenLabs premium voices.** `booth setup` wizard — enter your key, it
+  validates against your account, maps a voice to each announcer, flips `tts_backend` to
+  `elevenlabs`, offers a test line. Zero new deps: REST via stdlib (`eleven.py`) + `afplay`.
+  Streaming is still TODO.
 - ✅ Eval harness (`booth eval`): model comparison, quality judging, cost/latency, silent-failure detection → CSV + summary.
 - ✅ Fixed the "same intro every time" bug (two causes: daemon using a stale/invalid key; welcome-filler on every session start).
 
@@ -117,7 +121,8 @@ Run on 2026-05-31, 10 scenarios × 2 models × 2 repeats + judge:
   options" idea from the screenshot; the spinner word itself isn't exposed to hooks).
 - **`stop_after_win` on Sonnet** returned empty once in the eval — possible dead air at
   end-of-turn. Worth a look.
-- **M2** — ElevenLabs TTS backend (`tts.py` stubs exist) for real distinct voices + streaming.
+- **M2** — ✅ ElevenLabs backend + `booth setup` wizard shipped (`eleven.py`, `setup.py`).
+  Remaining: streaming playback (currently synth-then-`afplay` per line), and tuning latency.
 - **M3** — finish plugin packaging (setup wizard; `/booth` skill is scaffolded).
 - **Distribution** — README install steps are written for others, but untested by a second
   person on a clean machine.
@@ -130,6 +135,7 @@ Run on 2026-05-31, 10 scenarios × 2 models × 2 repeats + judge:
 | Command | Does |
 |---|---|
 | `booth on` / `off` | start / stop the daemon |
+| `booth setup` | ElevenLabs wizard: enter key, map a voice per announcer, switch to premium |
 | `booth mute` / `unmute` | silence / resume audio, daemon keeps running |
 | `booth status` | enabled / daemon / audio / tts / pack / sponsors |
 | `booth key <KEY>` | store Anthropic API key in config (daemon-independent of shell env) |

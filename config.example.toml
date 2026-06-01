@@ -10,6 +10,12 @@ sponsors_enabled = true
 sponsor_interval_s = 900.0    # min seconds between reads (900 = 15 min)
 donate_handle = ""            # e.g. "Venmo @your-handle" or a Ko-fi/GitHub Sponsors URL
 
-# API keys are read from the environment, not stored here:
-#   ELEVENLABS_API_KEY=...    (for tts_backend = "elevenlabs")
+# Premium voices: run `booth setup` to enter your ElevenLabs key and map a voice to each
+# announcer. It writes these for you (key falls back to $ELEVENLABS_API_KEY if unset):
+# elevenlabs_api_key = ""
+# eleven_voice_miller = ""     # voice_id for the lead play-by-play
+# eleven_voice_kuiper = ""     # voice_id for color commentary
+# eleven_voice_flemming = ""   # voice_id for the younger voice
+
+# The Anthropic commentary key is read from the environment (or `booth key <KEY>`):
 #   ANTHROPIC_API_KEY=...     (for the commentary engine)

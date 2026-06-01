@@ -17,6 +17,14 @@ class Config:
     sponsor_interval_s: float = 900.0    # 15 min
     donate_handle: str = ""              # e.g. "Venmo @your-handle"
     anthropic_api_key: str = ""          # overrides $ANTHROPIC_API_KEY for the daemon
+    elevenlabs_api_key: str = ""         # for tts_backend = "elevenlabs"; set via `booth setup`
+    eleven_voice_miller: str = ""        # ElevenLabs voice_id for the lead play-by-play
+    eleven_voice_kuiper: str = ""        # ElevenLabs voice_id for color commentary
+    eleven_voice_flemming: str = ""      # ElevenLabs voice_id for the younger voice
+
+    def eleven_voice(self, speaker: str) -> str:
+        """ElevenLabs voice_id configured for an announcer (e.g. 'miller'), or ''."""
+        return getattr(self, f"eleven_voice_{speaker}", "")
 
 
 def load() -> Config:

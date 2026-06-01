@@ -96,6 +96,7 @@ booth off       # stop the daemon; hooks go silent
 booth mute      # silence audio without stopping the daemon
 booth unmute    # resume audio
 booth status    # enabled / daemon / audio / voice pack / sponsors
+booth setup     # premium voices: enter your ElevenLabs key, pick a voice per announcer
 ```
 
 Then open a fresh Claude Code session and get to work. Want to hear it without wiring hooks?
@@ -105,6 +106,29 @@ Run the demo:
 cd ~/the-booth/src && python3 -m booth.demo          # generate + speak
 python3 -m booth.demo --silent                       # print only, no audio
 ```
+
+---
+
+## Premium voices (ElevenLabs)
+
+The free `say` voices are fine for a demo, but real distinct announcers make the booth.
+Bring **your own** [ElevenLabs key](https://elevenlabs.io/app/settings/api-keys) (free tier
+available — this is open source, so there's no shared key) and run the wizard:
+
+```bash
+booth setup
+```
+
+It validates your key, lists the voices on your account, and lets you map one to each
+announcer (**Miller** / **Kuiper** / **Flemming**), then flips `tts_backend` to `elevenlabs`
+and offers a test line from each. Create three voices first at
+[Voice Lab](https://elevenlabs.io/app/voice-lab) — name them `Announcer 1/2/3` and the wizard
+auto-assigns them in order.
+
+No extra Python package is required: The Booth talks to the ElevenLabs REST API with the
+standard library and plays audio through macOS `afplay`. Your key is stored in
+`~/.the-booth/config.toml` (gitignored) and never committed. Back to free anytime with
+`tts_backend = "say"`.
 
 ---
 
@@ -145,7 +169,7 @@ it off entirely with `sponsors_enabled = false`.
 - [x] **M0** — Talking prototype: events → commentary → 3 voices.
 - [x] On/off/mute control (`booth` CLI + `/booth` skill).
 - [ ] **M1** — Smarter pacing, event coalescing, rolling "game so far" memory for callbacks.
-- [ ] **M2** — ElevenLabs backend (premium voices, streaming).
+- [x] **M2** — ElevenLabs backend (premium voices) + `booth setup` wizard. Streaming TBD.
 - [ ] **M3** — One-command plugin install + setup wizard.
 - [ ] **M4** — Sponsor reads polish, more persona packs (hype streamer, nature doc, noir).
 

@@ -5,7 +5,7 @@ TODO(M1): real worker thread draining an internal queue and calling tts.speak.
 """
 from collections import deque
 
-from . import personas, tts
+from . import config, personas, tts
 
 _queue = deque()
 _muted = False
@@ -36,5 +36,8 @@ def _drain_one() -> None:
     ann = personas.PACKS[pack]["announcers"].get(line["speaker"])
     if not ann:
         return
-    voice = ann["voice_say"] if backend == "say" else ann["voice_elevenlabs"]
+    if backend == "say":
+        voice = ann["voice_say"]
+    else:  # elevenlabs: prefer the voice_id from `booth setup`, fall back to the pack slot
+        voice = config.load().eleven_voice(line["speaker"]) or ann["voice_elevenlabs"]
     tts.speak(line["text"], voice, backend)

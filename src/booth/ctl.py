@@ -84,6 +84,9 @@ def main():
             return 2
         config.set_field("anthropic_api_key", sys.argv[2])
         print("🔑 API key saved to config (daemon will use it regardless of shell env)")
+    elif cmd == "setup":
+        from . import setup as _setup
+        return _setup.main(sys.argv[2:])
     elif cmd == "eval":
         from . import eval as _eval
         sys.argv = [sys.argv[0]] + sys.argv[2:]   # hand remaining args to the eval parser
@@ -96,7 +99,7 @@ def main():
         print(f"enabled={cfg.enabled} · daemon={daemon} · audio={muted} · "
               f"tts={cfg.tts_backend} · pack={cfg.pack} · sponsors={cfg.sponsors_enabled}")
     else:
-        print(f"unknown command: {cmd!r} — use on | off | mute | unmute | status")
+        print(f"unknown command: {cmd!r} — use on | off | mute | unmute | status | setup | key | eval")
         return 2
     return 0
 

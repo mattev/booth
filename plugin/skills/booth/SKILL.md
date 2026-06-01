@@ -27,8 +27,14 @@ Map the user's intent to one of these `<command>` values:
 | "mute", "quiet", "shush"           | `mute`    | daemon keeps running, audio silenced            |
 | "unmute", "speak again"            | `unmute`  | re-enable audio                                 |
 | "status", "is it on?"              | `status`  | print enabled / daemon / mute / tts / pack      |
+| "setup", "use real voices",        | `setup`   | interactive ElevenLabs wizard: enter key, map a  |
+| "elevenlabs", "premium voices"     |           | voice per announcer, switch tts to `elevenlabs`  |
 
 After running, report the command's printed line back to the user.
+
+> `setup` is **interactive** (it prompts for the user's ElevenLabs API key and voice
+> choices). Don't run it silently in the background — tell the user to run `booth setup` in
+> their terminal, or pass a key non-interactively with `booth setup --key <KEY>`.
 
 ## Other settings (edit `~/.the-booth/config.toml` directly)
 
