@@ -133,22 +133,21 @@ so there's no shared key.
    them in order.
 
    To recreate the default booth crew, paste these descriptions into ElevenLabs **Voice
-   Design** — one per voice. They describe broadcast *archetypes*, not any specific real
-   announcer (see [Notes & caveats](#notes--caveats)):
+   Design** — one per voice:
 
-   - **Announcer 1 → Miller** (lead play-by-play):
+   - **Announcer 1 → Duane Kuiper** (lead play-by-play):
      > A smooth, resonant male voice of a veteran baseball broadcaster in his later years.
      > Crisp, warm tone with an effortless authority that is both conversational and deeply
      > passionate. Speaking at a steady, relaxed pace that suddenly erupts into booming,
      > electrifying excitement with signature drawn-out crescendos. Perfect audio quality
      > with a subtle, spacious broadcast booth acoustic.
-   - **Announcer 2 → Kuiper** (color commentary):
+   - **Announcer 2 → Mike Krukow** (color commentary):
      > A deep, gravelly male voice of a former athlete turned color commentator in his later
      > years. Rich, textured rasp with a booming, jovial quality that is intensely passionate
      > and warmly folksy. Speaking at an energetic, storytelling pace, punctuated by emphatic,
      > sudden outbursts of pure excitement and hearty chuckles. Perfect audio quality with a
      > subtle broadcast booth acoustic.
-   - **Announcer 3 → Flemming** (younger play-by-play/color):
+   - **Announcer 3 → Dave Flemming** (younger play-by-play/color):
      > A clear, bright male voice of a sharp, professional sports broadcaster in his middle
      > years. Smooth, polished tone with a slightly youthful, analytical quality that is both
      > precise and highly articulate. Speaking at a brisk, intelligent pace that accelerates
