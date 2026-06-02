@@ -60,8 +60,12 @@ cd plugin && python3 -m booth.eval   # re-run the eval → evals/*.csv
   (gitignored): `anthropic_api_key`, `elevenlabs_api_key`, `eleven_voice_{miller,kuiper,flemming}`.
   The daemon reads config every loop, so changes apply without restart — except new *code*,
   which needs `booth off && booth on`.
-- **Personas evoke archetypes, not real-voice clones** (right-of-publicity — see DESIGN §3.4).
-  Keep it that way.
+- **Don't ship cloned audio of real people** (right-of-publicity — see DESIGN §3.4). The
+  bundled `giants` persona pack and its free `say` voices evoke broadcast *archetypes*; keep
+  it that way and never commit audio cloned from a real individual. The README's optional
+  ElevenLabs **Voice Design** prompts may be labeled with real broadcasters' names — those are
+  text descriptions a user runs on *their own* account to generate *their own* voices; nothing
+  cloned is shipped in this repo.
 - **Local-only state** (not in git): the API keys, the Claude Code hooks in
   `~/.claude/settings.json`, the `booth` alias, and the running daemon/pidfile.
 
