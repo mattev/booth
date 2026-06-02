@@ -127,10 +127,33 @@ so there's no shared key.
      the `Access` permission and set the per-key **Usage Limit (Credits)** high enough — each
      spoken line costs ≈ 20–25 credits, so a tiny cap (e.g. 50) is exhausted in two lines.
    - Make sure the **account** has credits / a top-up balance, not just the key.
-4. **Three voices** to map to the announcers. Create them at
-   [Voice Lab](https://elevenlabs.io/app/voice-lab) (or use any voices on your account). Tip:
-   name them `Announcer 1` / `Announcer 2` / `Announcer 3` and the wizard auto-assigns them
-   in order.
+4. **Three voices** to map to the announcers. Create them with
+   [Voice Design](https://elevenlabs.io/app/voice-lab) (or use any voices on your account).
+   Tip: name them `Announcer 1` / `Announcer 2` / `Announcer 3` and the wizard auto-assigns
+   them in order.
+
+   To recreate the default booth crew, paste these descriptions into ElevenLabs **Voice
+   Design** — one per voice. They describe broadcast *archetypes*, not any specific real
+   announcer (see [Notes & caveats](#notes--caveats)):
+
+   - **Announcer 1 → Miller** (lead play-by-play):
+     > A smooth, resonant male voice of a veteran baseball broadcaster in his later years.
+     > Crisp, warm tone with an effortless authority that is both conversational and deeply
+     > passionate. Speaking at a steady, relaxed pace that suddenly erupts into booming,
+     > electrifying excitement with signature drawn-out crescendos. Perfect audio quality
+     > with a subtle, spacious broadcast booth acoustic.
+   - **Announcer 2 → Kuiper** (color commentary):
+     > A deep, gravelly male voice of a former athlete turned color commentator in his later
+     > years. Rich, textured rasp with a booming, jovial quality that is intensely passionate
+     > and warmly folksy. Speaking at an energetic, storytelling pace, punctuated by emphatic,
+     > sudden outbursts of pure excitement and hearty chuckles. Perfect audio quality with a
+     > subtle broadcast booth acoustic.
+   - **Announcer 3 → Flemming** (younger play-by-play/color):
+     > A clear, bright male voice of a sharp, professional sports broadcaster in his middle
+     > years. Smooth, polished tone with a slightly youthful, analytical quality that is both
+     > precise and highly articulate. Speaking at a brisk, intelligent pace that accelerates
+     > into rapid-fire intensity, peaking with a breathless, high-register crescendo during
+     > thrilling moments. Perfect audio quality with a subtle broadcast booth acoustic.
 
 ### Setup
 
