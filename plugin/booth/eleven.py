@@ -32,7 +32,12 @@ def _request(method, path, api_key, *, body=None, query="", accept="application/
             return r.read()
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:300]
-        hint = " (check your API key)" if e.code in (401, 403) else ""
+        if "quota_exceeded" in detail:
+            hint = " (out of ElevenLabs credits — top up/upgrade your plan or use a key with credits)"
+        elif e.code in (401, 403):
+            hint = " (check your API key)"
+        else:
+            hint = ""
         raise ElevenError(f"{e.code} {e.reason}{hint}: {detail}") from None
     except urllib.error.URLError as e:
         raise ElevenError(f"network error reaching ElevenLabs: {e.reason}") from None

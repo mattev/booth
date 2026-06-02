@@ -9,9 +9,29 @@ import os
 import subprocess
 import tempfile
 
+from pathlib import Path
+
 from . import config, eleven
 
 _FALLBACK_SAY_VOICE = "Daniel"   # used if an elevenlabs line can't be produced
+# Truthful health signal for `booth status`: present == last elevenlabs line had to fall
+# back to robotic `say` (bad key / out of credits). Cleared on the next success.
+_FALLBACK_MARK = Path.home() / ".the-booth" / "tts_fallback"
+
+
+def _mark_fallback(reason: str) -> None:
+    try:
+        _FALLBACK_MARK.parent.mkdir(parents=True, exist_ok=True)
+        _FALLBACK_MARK.write_text(reason)
+    except OSError:
+        pass
+
+
+def _clear_fallback() -> None:
+    try:
+        _FALLBACK_MARK.unlink(missing_ok=True)
+    except OSError:
+        pass
 
 
 def speak(text: str, voice: str, backend: str = "say") -> None:
@@ -42,11 +62,14 @@ def _elevenlabs(text: str, voice_id: str) -> None:
     """
     key = _eleven_key()
     if not key or not voice_id:
+        _mark_fallback("no elevenlabs key or voice_id configured")
         return _say(text, _FALLBACK_SAY_VOICE)
     try:
         audio = eleven.tts_bytes(key, voice_id, text)
-    except eleven.ElevenError:
+    except eleven.ElevenError as e:
+        _mark_fallback(str(e))
         return _say(text, _FALLBACK_SAY_VOICE)
+    _clear_fallback()
 
     path = None
     try:

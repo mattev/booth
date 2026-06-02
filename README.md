@@ -112,23 +112,72 @@ python3 -m booth.demo --silent                       # print only, no audio
 ## Premium voices (ElevenLabs)
 
 The free `say` voices are fine for a demo, but real distinct announcers make the booth.
-Bring **your own** [ElevenLabs key](https://elevenlabs.io/app/settings/api-keys) (free tier
-available — this is open source, so there's no shared key) and run the wizard:
+The Booth uses **your own** [ElevenLabs](https://elevenlabs.io) account — this is open source,
+so there's no shared key.
+
+### Prerequisites
+
+1. An **ElevenLabs account** (the free tier works to try it; heavier use needs paid credits).
+2. An **API key** — create one at
+   [Settings → API Keys](https://elevenlabs.io/app/settings/api-keys).
+3. **The key must allow Text-to-Speech and have credits available.** Two common gotchas —
+   both make every announcer fall back to the robotic macOS `say` voice (see
+   [Troubleshooting](#troubleshooting-all-voices-sound-the-same)):
+   - If you **restrict** the key (Edit API Key → *Restrict Key*), give **Text to Speech**
+     the `Access` permission and set the per-key **Usage Limit (Credits)** high enough — each
+     spoken line costs ≈ 20–25 credits, so a tiny cap (e.g. 50) is exhausted in two lines.
+   - Make sure the **account** has credits / a top-up balance, not just the key.
+4. **Three voices** to map to the announcers. Create them at
+   [Voice Lab](https://elevenlabs.io/app/voice-lab) (or use any voices on your account). Tip:
+   name them `Announcer 1` / `Announcer 2` / `Announcer 3` and the wizard auto-assigns them
+   in order.
+
+### Setup
+
+Run the wizard and follow the prompts:
 
 ```bash
 booth setup
+# or, for a scripted install, skip the key prompt:
+booth setup --key sk_...
 ```
 
-It validates your key, lists the voices on your account, and lets you map one to each
-announcer (**Miller** / **Kuiper** / **Flemming**), then flips `tts_backend` to `elevenlabs`
-and offers a test line from each. Create three voices first at
-[Voice Lab](https://elevenlabs.io/app/voice-lab) — name them `Announcer 1/2/3` and the wizard
-auto-assigns them in order.
+It will:
+
+1. **Validate your key** against ElevenLabs and list the voices on your account.
+2. Let you **map a voice to each announcer** — **Miller** (lead play-by-play), **Kuiper**
+   (color), **Flemming** (younger play-by-play). Press Enter to accept the smart default.
+3. **Save** the key + voice mapping to `~/.the-booth/config.toml` and flip
+   `tts_backend` to `elevenlabs`.
+4. Offer a **test line from each voice** so you can confirm they sound distinct. If synthesis
+   fails (bad key / no credits), it tells you instead of silently falling back.
+
+Then restart the booth so it picks up the new backend:
+
+```bash
+booth off && booth on
+```
 
 No extra Python package is required: The Booth talks to the ElevenLabs REST API with the
 standard library and plays audio through macOS `afplay`. Your key is stored in
 `~/.the-booth/config.toml` (gitignored) and never committed. Back to free anytime with
 `tts_backend = "say"`.
+
+### Troubleshooting: all voices sound the same
+
+If every announcer comes out in the same robotic voice, the booth is failing to reach
+ElevenLabs and **falling back to macOS `say`** (it fails soft so it never goes silent
+mid-session). `booth status` flags this:
+
+```
+tts=elevenlabs (⚠️ falling back to `say`: 401 … out of ElevenLabs credits …)
+```
+
+Almost always it's **credits or key permissions** — see the
+[Prerequisites](#prerequisites) above. Common causes: the account is out of credits, or the
+API key is *Restricted* with too low a per-key Usage Limit (the credit cap is per-key and
+separate from your account balance). Fix it in the ElevenLabs dashboard, then re-run
+`booth setup` (or just `booth off && booth on`).
 
 ---
 

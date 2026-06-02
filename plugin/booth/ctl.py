@@ -96,8 +96,12 @@ def main():
         pid = _running()
         daemon = f"running (pid {pid})" if pid else "stopped"
         muted = "muted" if MUTE.exists() else "live"
+        tts = cfg.tts_backend
+        mark = Path.home() / ".the-booth" / "tts_fallback"
+        if tts == "elevenlabs" and mark.exists():
+            tts = f"elevenlabs (⚠️ falling back to `say`: {mark.read_text().strip()[:120]})"
         print(f"enabled={cfg.enabled} · daemon={daemon} · audio={muted} · "
-              f"tts={cfg.tts_backend} · pack={cfg.pack} · sponsors={cfg.sponsors_enabled}")
+              f"tts={tts} · pack={cfg.pack} · sponsors={cfg.sponsors_enabled}")
     else:
         print(f"unknown command: {cmd!r} — use on | off | mute | unmute | status | setup | key | eval")
         return 2

@@ -103,9 +103,19 @@ def _save(api_key, chosen):
     config.save(cfg)
 
 
-def _test(chosen):
+def _test(api_key, chosen):
     ans = _prompt("\nHear a quick test from each voice? [Y/n] ", "y")
     if ans.lower() == "n":
+        return
+    # Pre-flight one real synthesis. Listing voices is free, but text-to-speech costs
+    # credits — so an out-of-credits or revoked key passes setup yet fails here. Catch it
+    # loudly instead of letting tts.speak() silently fall back to robotic `say` for all three.
+    try:
+        eleven.tts_bytes(api_key, chosen["miller"]["voice_id"], SAMPLE_LINES["miller"])
+    except eleven.ElevenError as e:
+        print(f"\n⚠️  ElevenLabs synthesis failed: {e}")
+        print("   Your voice mapping is saved, but until this is resolved the booth will")
+        print("   fall back to the robotic macOS `say` voice for every announcer.")
         return
     for speaker, _ in ANNOUNCERS:
         print(f"  🔊 {speaker} ({chosen[speaker]['name']})…")
@@ -142,7 +152,7 @@ def main(argv=None):
     for speaker, _ in ANNOUNCERS:
         print(f"     {speaker:9} → {chosen[speaker]['name']}")
 
-    _test(chosen)
+    _test(api_key, chosen)
     print("\nDone. Run `booth on` (or restart it) and open a fresh Claude Code session.")
     return 0
 
