@@ -203,6 +203,13 @@ popup, it does an in-character **sponsor read** ("today's broadcast is brought t
 at most once every ~15 minutes, never mid-action. Set your `donate_handle` in config, or turn
 it off entirely with `sponsors_enabled = false`.
 
+If The Booth made your session more fun, you can tip the maintainer:
+
+<p align="center">
+  <img src="assets/venmo-qr.png" alt="Venmo QR code for @Matt-Evered" width="260"><br>
+  <strong>Venmo <a href="https://venmo.com/u/Matt-Evered">@Matt-Evered</a></strong>
+</p>
+
 ---
 
 ## Cost
