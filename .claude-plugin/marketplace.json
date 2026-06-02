@@ -1,0 +1,16 @@
+{
+  "name": "booth",
+  "owner": { "name": "mevered" },
+  "metadata": {
+    "description": "The Booth — live audio play-by-play of your Claude Code session."
+  },
+  "plugins": [
+    {
+      "name": "the-booth",
+      "source": "./plugin",
+      "description": "Live audio play-by-play of your Claude Code session, called by a three-person broadcast booth. Dev events become baseball calls; control with /booth or the `booth` CLI.",
+      "version": "0.0.1",
+      "author": { "name": "mevered" }
+    }
+  ]
+}

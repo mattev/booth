@@ -75,11 +75,11 @@ inert unless the daemon is running, so there's zero overhead when the booth is o
 ```jsonc
 {
   "hooks": {
-    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/src/booth/hook_entry.sh session_start" }] }],
-    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/src/booth/hook_entry.sh prompt" }] }],
-    "PreToolUse":       [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/src/booth/hook_entry.sh pre_tool" }] }],
-    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/src/booth/hook_entry.sh post_tool" }] }],
-    "Stop":             [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/src/booth/hook_entry.sh stop" }] }]
+    "SessionStart":     [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/plugin/booth/hook_entry.sh session_start" }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/plugin/booth/hook_entry.sh prompt" }] }],
+    "PreToolUse":       [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/plugin/booth/hook_entry.sh pre_tool" }] }],
+    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/plugin/booth/hook_entry.sh post_tool" }] }],
+    "Stop":             [{ "hooks": [{ "type": "command", "command": "$HOME/the-booth/plugin/booth/hook_entry.sh stop" }] }]
   }
 }
 ```
@@ -103,7 +103,7 @@ Then open a fresh Claude Code session and get to work. Want to hear it without w
 Run the demo:
 
 ```bash
-cd ~/the-booth/src && python3 -m booth.demo          # generate + speak
+cd ~/the-booth/plugin && python3 -m booth.demo          # generate + speak
 python3 -m booth.demo --silent                       # print only, no audio
 ```
 

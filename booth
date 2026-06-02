@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # Convenience wrapper so you can run `booth on|off|mute|unmute|status` from anywhere.
-cd "$(dirname "${BASH_SOURCE[0]}")/src" && exec python3 -m booth.ctl "$@"
+cd "$(dirname "${BASH_SOURCE[0]}")/plugin" && exec python3 -m booth.ctl "$@"

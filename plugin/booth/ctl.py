@@ -20,7 +20,7 @@ from . import config
 
 PID = Path.home() / ".the-booth" / "daemon.pid"
 MUTE = Path.home() / ".the-booth" / "muted"          # presence = muted
-SRC_DIR = Path(__file__).resolve().parents[1]        # .../the-booth/src
+SRC_DIR = Path(__file__).resolve().parents[1]        # .../plugin (dir holding the booth pkg)
 
 
 def _running():

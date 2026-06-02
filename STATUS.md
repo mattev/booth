@@ -35,7 +35,7 @@ cd ~/the-booth
 booth status              # is the daemon running? what's configured?
 booth on                  # start narrating (then open a FRESH Claude Code session)
 python3 -m booth.demo     # hear it without wiring a session (generate + speak)
-cd src && python3 -m booth.eval   # re-run quality/cost eval → evals/*.csv
+cd plugin && python3 -m booth.eval   # re-run quality/cost eval → evals/*.csv
 booth off                 # stop
 ```
 
@@ -62,7 +62,7 @@ the-booth/
 ├── STATUS.md              # ← this file
 ├── README.md              # public-facing overview
 ├── plugin/                # Claude Code plugin packaging (hooks.json, /booth skill, manifest)
-└── src/booth/
+└── plugin/booth/
     ├── hook_handler.py    # fast enqueue; no-ops unless daemon running (pidfile gate)
     ├── hook_entry.sh      # shim the hooks call
     ├── daemon.py          # drain queue → commentary → player; reloads config each loop

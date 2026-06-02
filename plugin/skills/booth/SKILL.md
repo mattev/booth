@@ -11,12 +11,16 @@ daemon; this skill only manages it via the `booth-ctl` CLI.
 
 ## How to run a command
 
-All actions shell out to `booth-ctl`. Run it from the project's `src/` directory so the
-`booth` package is importable:
+All actions shell out to `booth-ctl`. Run it from the directory that holds the `booth`
+package. The booth's SessionStart hook writes that path to `~/.the-booth/code_path`, so it
+works whether the plugin was installed from a marketplace or cloned manually:
 
 ```bash
-cd "${BOOTH_SRC:-$HOME/the-booth/src}" && python3 -m booth.ctl <command>
+cd "$(cat "$HOME/.the-booth/code_path" 2>/dev/null || echo "$HOME/the-booth/plugin")" && python3 -m booth.ctl <command>
 ```
+
+(If `~/.the-booth/code_path` doesn't exist yet, the plugin's hooks haven't run — tell the
+user to open a fresh Claude Code session so the SessionStart hook fires.)
 
 Map the user's intent to one of these `<command>` values:
 

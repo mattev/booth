@@ -18,7 +18,7 @@ Hooks just drop events on a queue (`~/.the-booth/events.jsonl`) and exit (~20ms)
 **daemon** does all the heavy lifting on its own clock. Hooks are inert unless the daemon is
 running, so there's zero overhead when the booth is off.
 
-## Key files (`src/booth/`)
+## Key files (`plugin/booth/`)
 
 | File | Role |
 |---|---|
@@ -36,15 +36,15 @@ running, so there's zero overhead when the booth is off.
 
 ## Running it
 
-The `booth` wrapper script `cd`s into `src/` and runs `python3 -m booth.ctl`. Equivalently,
-from `src/`:
+The `booth` wrapper script `cd`s into `plugin/` and runs `python3 -m booth.ctl`. Equivalently,
+from `plugin/`:
 
 ```bash
 booth status                 # enabled / daemon / audio / tts / pack / sponsors
 booth on / off               # start / stop the detached daemon
 booth setup                  # premium voices: ElevenLabs key + voice mapping
 python3 -m booth.demo        # hear a sample session (uses current tts_backend)
-cd src && python3 -m booth.eval   # re-run the eval → evals/*.csv
+cd plugin && python3 -m booth.eval   # re-run the eval → evals/*.csv
 ```
 
 ## Conventions / gotchas
