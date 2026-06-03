@@ -108,9 +108,16 @@ def _parse(text):
 
 
 def _render(events, memory):
-    plays = "\n".join(f"- {e}" for e in events) or "- (warming up)"
+    plays = "\n".join(f"- {_desc(e)}" for e in events) or "- (warming up)"
     mem = f"Game so far: {memory}\n\n" if memory else ""
     return f"{mem}Latest plays in the Claude Code session:\n{plays}\n\n{SCHEMA_HINT}"
+
+
+def _desc(e):
+    """A clean one-liner for an event. Events are {kind, desc, ...} dicts; tolerate raw text."""
+    if isinstance(e, dict):
+        return e.get("desc") or e.get("kind") or ""
+    return str(e)
 
 
 # --- zero-dependency fallback so the booth always talks --------------------------------

@@ -12,7 +12,7 @@ import json
 import time
 from pathlib import Path
 
-from . import commentary, config, player, sponsors
+from . import commentary, config, pacing, player, sponsors
 from .hook_handler import QUEUE
 
 
@@ -28,7 +28,9 @@ def run() -> None:
             continue
         batch, cursor = _drain(cursor)  # always advance cursor, even when muted
         if batch and not MUTE.exists() and not player.is_backed_up():
-            lines = commentary.call(batch, pack=cfg.pack, chatty="lively")
+            beats = pacing.coalesce(batch)
+            big = pacing.detect_big_moment(beats)
+            lines = commentary.call(beats, pack=cfg.pack, big_moment=big, chatty="lively")
             lines = sponsors.maybe_inject(lines, cfg)
             for line in lines:
                 player.enqueue(line, pack=cfg.pack, backend=cfg.tts_backend)
@@ -61,12 +63,13 @@ def _summarize(event):
     tool = p.get("tool_name") or p.get("tool") or ""
     if kind == "prompt":
         text = (p.get("prompt") or p.get("user_prompt") or "")[:160]
-        return {"kind": kind, "desc": f"user asked: {text}"}
+        return {"kind": kind, "desc": f"user asked: {text}", "tool": "", "hint": ""}
     if kind in ("pre_tool", "post_tool"):
         target = p.get("tool_input", {})
-        hint = target.get("file_path") or target.get("command") or target.get("pattern") or ""
-        return {"kind": kind, "desc": f"{kind} {tool} {str(hint)[:80]}".strip()}
-    return {"kind": kind, "desc": kind}
+        hint = str(target.get("file_path") or target.get("command") or target.get("pattern") or "")[:80]
+        return {"kind": kind, "tool": tool, "hint": hint,
+                "desc": f"{kind} {tool} {hint}".strip()}
+    return {"kind": kind, "desc": kind, "tool": "", "hint": ""}
 
 
 def _count_lines(path: Path) -> int:
