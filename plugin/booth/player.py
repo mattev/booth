@@ -1,27 +1,47 @@
-"""Audio player: single consumer of the line queue. No overlap — one line finishes
-before the next begins. Supports mute and backpressure signaling.
+"""Audio player: a single background worker that speaks queued lines one at a time.
 
-TODO(M1): real worker thread draining an internal queue and calling tts.speak.
+`enqueue()` is non-blocking — it drops a line on an internal queue and returns immediately.
+A daemon worker thread drains the queue and calls `tts.speak()`, so exactly one line is ever
+spoken at a time (no overlap), while the caller (the booth daemon) stays free to keep pacing,
+coalescing, and generating on its own clock.
+
+Backpressure: `is_backed_up()` reflects lines still pending — queued OR currently being
+spoken — so the daemon can stop generating new banter when the booth falls behind. (The old
+synchronous drain made this impossible: the queue was always empty by the time anyone asked.)
 """
-from collections import deque
+import queue
+import threading
 
 from . import config, personas, tts
 
-_queue = deque()
+BACKPRESSURE_LIMIT = 2  # more than this many lines pending → daemon holds off generating
+
+_queue = queue.Queue()
+_pending = 0                       # queued + in-flight; guarded by _lock
+_lock = threading.Lock()
+_worker = None
+_worker_lock = threading.Lock()
 _muted = False
-BACKPRESSURE_LIMIT = 2  # if more than this is pending, daemon skips generating new lines
 
 
 def enqueue(line, pack="giants", backend="say") -> None:
-    """line = {'speaker': 'kuiper', 'text': '...'}. Maps speaker -> voice and speaks."""
+    """line = {'speaker': 'kuiper', 'text': '...'}. Non-blocking; the worker speaks it."""
+    global _pending
     if _muted:
         return
-    _queue.append((line, pack, backend))
-    _drain_one()  # TODO: move to a background worker thread
+    _ensure_worker()
+    with _lock:
+        _pending += 1
+    _queue.put((line, pack, backend))
 
 
 def is_backed_up() -> bool:
-    return len(_queue) > BACKPRESSURE_LIMIT
+    return _pending > BACKPRESSURE_LIMIT
+
+
+def pending() -> int:
+    """Lines still queued or being spoken — used for backpressure and diagnostics."""
+    return _pending
 
 
 def mute(on: bool = True) -> None:
@@ -29,10 +49,40 @@ def mute(on: bool = True) -> None:
     _muted = on
 
 
-def _drain_one() -> None:
-    if not _queue:
+def wait_until_done() -> None:
+    """Block until every queued line has finished speaking (one-shot runs like the demo)."""
+    _queue.join()
+
+
+def _ensure_worker() -> None:
+    """Lazily start the single consumer thread. Daemon thread → dies with the process."""
+    global _worker
+    if _worker is not None and _worker.is_alive():
         return
-    line, pack, backend = _queue.popleft()
+    with _worker_lock:
+        if _worker is not None and _worker.is_alive():
+            return
+        _worker = threading.Thread(target=_run, name="booth-player", daemon=True)
+        _worker.start()
+
+
+def _run() -> None:
+    global _pending
+    while True:
+        line, pack, backend = _queue.get()
+        try:
+            if not _muted:
+                _speak(line, pack, backend)
+        except Exception:
+            # Fail soft: a bad line must never kill the worker, or the booth goes silent.
+            pass
+        finally:
+            with _lock:
+                _pending -= 1
+            _queue.task_done()
+
+
+def _speak(line, pack, backend) -> None:
     ann = personas.PACKS[pack]["announcers"].get(line["speaker"])
     if not ann:
         return

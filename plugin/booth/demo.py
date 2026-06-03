@@ -31,6 +31,8 @@ def main():
         print(f"  {line['speaker'].upper():9} {line['text']}")
         if not silent:
             player.enqueue(line)
+    if not silent:
+        player.wait_until_done()   # worker speaks async now — don't exit mid-call
 
 
 if __name__ == "__main__":
