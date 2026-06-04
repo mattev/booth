@@ -35,6 +35,10 @@ What's **done and shipped**:
     + **big-moment detection** (genuine wins route to Sonnet for the crescendo).
   - **Rolling LLM-summarized "game so far" memory** (`commentary.summarize()`) threaded across
     daemon ticks so callbacks land; fails soft (returns prior memory on any error).
+  - **Thinking-gap color** (`commentary.thinking_gap()`): the daemon detects the dead air after
+    a prompt before Claude's first tool (an empty queue while "awaiting the pitch") and fills it
+    once with a contextual color line built from memory. Config: `thinking_color_enabled`,
+    `thinking_gap_s`. Fails soft to rotating templates.
   - `commentary._render` now sends clean event descriptions, not Python dict-reprs.
 
 What's **not done** (next session): see §"Next steps".
@@ -127,12 +131,11 @@ Run on 2026-05-31, 10 scenarios × 2 models × 2 repeats + judge:
 
 ## Known issues / next steps
 
-- **M1 — pacing & memory** ✅ done (see "done and shipped" above): coalescing, backpressure,
-  and rolling LLM-summarized memory all shipped. **Still open from the original M1 idea:**
-  "thinking-gap" color (narrate the pause before Claude's first tool — the spinner word itself
-  isn't exposed to hooks, so this needs a different trigger). Also worth tuning: the memory
-  adds a 2nd Haiku call per active tick (cost), and coalescing/memory are skipped while backed
-  up (dropped beats don't reach memory) — fine for now, revisit if callbacks feel gappy.
+- **M1 — pacing & memory** ✅ done in full (coalescing, backpressure, rolling memory, and
+  thinking-gap color — see "done and shipped" above). Worth tuning later: memory + thinking-gap
+  each add a Haiku call (cost), and coalescing/memory are skipped while backed up (dropped beats
+  don't reach memory) — fine for now, revisit if callbacks feel gappy. The thinking-gap fires
+  on the gap (empty queue after a prompt), not the spinner word, which hooks don't expose.
 - **Re-baseline the eval:** the `_render` cleanup changed model input slightly. A quick haiku
   pass post-change read **4.62** (1 repeat) vs the 4.69/4.93 baseline below — within noise,
   0 fallbacks. Re-run the full `booth eval` (2 models × 2 repeats) to set a fresh baseline.

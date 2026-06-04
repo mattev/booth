@@ -139,6 +139,56 @@ def summarize(prev_memory, events, model=None):
     return text[:400] or prev_memory
 
 
+def thinking_gap(memory, pack="giants", model=None):
+    """One bit of color to fill the dead air while Claude thinks before its first move.
+
+    Uses the rolling memory for a contextual line or a callback. Fails soft to a template
+    (no key / API error) so the gap is always fillable. Returns a list of 0-2 line dicts.
+    """
+    key = _resolve_key()
+    if not key:
+        return _template_gap()
+    system = personas.system_prompt(pack) + (
+        "\n\nCONTEXT: Claude is pausing to think before its first move of this at-bat — the "
+        "pitch hasn't come yet. Fill the dead air like a broadcast booth between pitches: ONE "
+        "short line (two at most) of anticipatory color or a callback to the game so far. Do "
+        "NOT narrate plays that haven't happened yet. Prefer flemming or kuiper for the filler."
+    )
+    body = {
+        "model": model or MODEL_FAST,
+        "max_tokens": 160,
+        "system": [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
+        "messages": [{
+            "role": "user",
+            "content": f"Game so far: {memory or '(just getting started)'}\n\n"
+                       f"Claude is still thinking — no new plays yet. Give the booth one bit "
+                       f"of color while we wait.\n\n{SCHEMA_HINT}",
+        }],
+    }
+    try:
+        data = _post(body, key)
+    except (urllib.error.URLError, KeyError, ValueError, TimeoutError):
+        return _template_gap()
+    text = "".join(b.get("text", "") for b in data.get("content", []))
+    return _parse(text)[:2] or _template_gap()
+
+
+# Rotating canned fills so the no-key path doesn't repeat one line forever.
+_GAP_TEMPLATES = [
+    ("flemming", "Claude steps in and takes a moment to read the situation before the first move."),
+    ("kuiper", "Long look in from the mound. No rush — we've got all the dead air in the world."),
+    ("miller", "And we wait... the wind-up is taking its time here, folks."),
+]
+_gap_i = 0
+
+
+def _template_gap():
+    global _gap_i
+    speaker, text = _GAP_TEMPLATES[_gap_i % len(_GAP_TEMPLATES)]
+    _gap_i += 1
+    return [{"speaker": speaker, "text": text}]
+
+
 def _parse(text):
     """Pull the JSON array out of the model's reply, tolerate stray prose/fences."""
     m = re.search(r"\[.*\]", text, re.DOTALL)

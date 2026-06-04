@@ -10,6 +10,11 @@ sponsors_enabled = true
 sponsor_interval_s = 900.0    # min seconds between reads (900 = 15 min)
 donate_handle = ""            # e.g. "Venmo @your-handle" or a Ko-fi/GitHub Sponsors URL
 
+# Thinking-gap color: fill the dead air after a prompt while Claude thinks (before its first
+# tool call), like a booth between pitches. One line per at-bat. Set false to stay quiet.
+thinking_color_enabled = true
+thinking_gap_s = 6.0          # quiet seconds after a prompt before the booth fills the gap
+
 # Premium voices: run `booth setup` to enter your ElevenLabs key and map a voice to each
 # announcer. It writes these for you (key falls back to $ELEVENLABS_API_KEY if unset):
 # elevenlabs_api_key = ""

@@ -16,6 +16,8 @@ class Config:
     sponsors_enabled: bool = True
     sponsor_interval_s: float = 900.0    # 15 min
     donate_handle: str = ""              # e.g. "Venmo @your-handle"
+    thinking_color_enabled: bool = True  # fill the pre-first-pitch "thinking gap" with color
+    thinking_gap_s: float = 6.0          # quiet seconds after a prompt before filling the gap
     anthropic_api_key: str = ""          # overrides $ANTHROPIC_API_KEY for the daemon
     elevenlabs_api_key: str = ""         # for tts_backend = "elevenlabs"; set via `booth setup`
     eleven_voice_miller: str = ""        # ElevenLabs voice_id for the lead play-by-play
