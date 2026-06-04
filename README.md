@@ -252,7 +252,7 @@ If The Booth made your session more fun, you can tip the maintainer:
 
 - [x] **M0** — Talking prototype: events → commentary → 3 voices.
 - [x] On/off/mute control (`booth` CLI + `/booth` skill).
-- [ ] **M1** — Smarter pacing, event coalescing, rolling "game so far" memory for callbacks.
+- [x] **M1** — Smarter pacing: async player + backpressure, event coalescing, rolling "game so far" memory for callbacks. (Thinking-gap color still TODO.)
 - [x] **M2** — ElevenLabs backend (premium voices) + `booth setup` wizard. Streaming TBD.
 - [ ] **M3** — One-command plugin install + setup wizard.
 - [ ] **M4** — Sponsor reads polish, more persona packs (hype streamer, nature doc, noir).

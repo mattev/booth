@@ -1,6 +1,6 @@
 # The Booth — Project Status / Handoff
 
-**Last worked: 2026-05-31** · Repo: https://github.com/mattev/booth · See [DESIGN.md](./DESIGN.md) for full design.
+**Last worked: 2026-06-03** · Repo: https://github.com/mattev/booth · See [DESIGN.md](./DESIGN.md) for full design.
 
 > Picking this back up? Read §"Resume in 60 seconds" first. The code is all in git, but a few
 > things live only on this Mac (API key, hooks, daemon) — those are in §"Local machine state".
@@ -23,6 +23,19 @@ What's **done and shipped**:
   Streaming is still TODO.
 - ✅ Eval harness (`booth eval`): model comparison, quality judging, cost/latency, silent-failure detection → CSV + summary.
 - ✅ Fixed the "same intro every time" bug (two causes: daemon using a stale/invalid key; welcome-filler on every session start).
+- ✅ **ElevenLabs reliability** (2026-06-01): synth failures (out-of-credits / restricted key) no
+  longer silently degrade every voice to robotic `say` with no signal. `booth status` flags the
+  fallback; `booth setup`'s test does a real synth first; quota errors say so. Docs rewritten
+  (prereqs incl. the per-key Usage-Limit footgun, Voice Design prompts, troubleshooting).
+- ✅ **M1 — pacing & memory** (2026-06-03), shipped in 3 layers:
+  - `player.py` is now a real background **worker thread** draining a queue; `enqueue()` is
+    non-blocking and **backpressure actually fires** (the old synchronous drain made
+    `is_backed_up()` permanently false).
+  - `pacing.py`: **event coalescing** (consecutive same-tool events → one beat, "Read ×6 (…)")
+    + **big-moment detection** (genuine wins route to Sonnet for the crescendo).
+  - **Rolling LLM-summarized "game so far" memory** (`commentary.summarize()`) threaded across
+    daemon ticks so callbacks land; fails soft (returns prior memory on any error).
+  - `commentary._render` now sends clean event descriptions, not Python dict-reprs.
 
 What's **not done** (next session): see §"Next steps".
 
@@ -114,11 +127,15 @@ Run on 2026-05-31, 10 scenarios × 2 models × 2 repeats + judge:
 
 ## Known issues / next steps
 
-- **M1 — pacing & memory** (the big one): the daemon batches naively every 4s and can lag if
-  Claude moves fast. Want: event coalescing (10 reads → "studying the scouting report"),
-  backpressure, a rolling "game so far" memory so callbacks land, and "thinking-gap" color
-  (narrate the pause before Claude's first tool — this was the "harmonizing/considering
-  options" idea from the screenshot; the spinner word itself isn't exposed to hooks).
+- **M1 — pacing & memory** ✅ done (see "done and shipped" above): coalescing, backpressure,
+  and rolling LLM-summarized memory all shipped. **Still open from the original M1 idea:**
+  "thinking-gap" color (narrate the pause before Claude's first tool — the spinner word itself
+  isn't exposed to hooks, so this needs a different trigger). Also worth tuning: the memory
+  adds a 2nd Haiku call per active tick (cost), and coalescing/memory are skipped while backed
+  up (dropped beats don't reach memory) — fine for now, revisit if callbacks feel gappy.
+- **Re-baseline the eval:** the `_render` cleanup changed model input slightly. A quick haiku
+  pass post-change read **4.62** (1 repeat) vs the 4.69/4.93 baseline below — within noise,
+  0 fallbacks. Re-run the full `booth eval` (2 models × 2 repeats) to set a fresh baseline.
 - **`stop_after_win` on Sonnet** returned empty once in the eval — possible dead air at
   end-of-turn. Worth a look.
 - **M2** — ✅ ElevenLabs backend + `booth setup` wizard shipped (`eleven.py`, `setup.py`).
