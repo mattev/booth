@@ -118,14 +118,21 @@ These make it run here and must be recreated if you move machines:
 
 ## Eval baseline (compare against this after future changes)
 
-Run on 2026-05-31, 10 scenarios × 2 models × 2 repeats + judge:
+Run on 2026-06-03 (post-M1 / post-`_render` cleanup), 10 scenarios × 2 models × 2 repeats + judge:
 
 | Model | Overall /5 | Accuracy | Persona | Humor | Latency | Cost/run |
 |---|---|---|---|---|---|---|
-| haiku  | 4.69 | 4.0  | 4.25 | 3.65 | 1.54s | $0.020 |
-| sonnet | 4.93 | 4.25 | 4.65 | 3.9  | 3.11s | $0.056 |
+| haiku  | 4.50 | 4.81 | 4.62 | 3.88 | 1.47s | $0.020 |
+| sonnet | 4.88 | 4.88 | 5.00 | 4.19 | 2.77s | $0.054 |
 
 0 fallbacks · 0 no-variation · silence-by-design 2/2. CSVs in `evals/` (gitignored).
+
+Prior baseline (2026-05-31): haiku overall 4.69 (acc 4.0 / per 4.25 / hum 3.65); sonnet 4.93
+(4.25 / 4.65 / 3.9). Net vs then: **per-dimension scores rose** (esp. haiku accuracy +0.8 —
+the `_render` cleanup gives the model cleaner event text), while the holistic *overall* drifted
+down slightly. "overall" is a separate holistic judge score, not the mean of the dimensions, so
+that divergence is judge noise over a real accuracy gain. The `stop_after_win` empty-output blip
+did **not** recur this run. Bump `--repeats` for a tighter estimate if the overall dip nags.
 
 ---
 
