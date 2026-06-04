@@ -2,6 +2,12 @@
 
 **Live audio play-by-play of your Claude Code session, called by a three-person broadcast booth.**
 
+### 🎧 Hear the booth in action
+
+<video src="https://github.com/mattev/booth/raw/main/assets/booth-demo-1.mp4" controls width="100%"></video>
+
+> ▶️ If the player doesn't load, [**listen to the demo here**](https://github.com/mattev/booth/raw/main/assets/booth-demo-1.mp4) (or grab the [`.m4a`](assets/booth-demo-1.m4a)).
+
 As you work, a baseball broadcast crew narrates the action out loud — melodic play-by-play,
 dry color commentary, and the occasional in-character sponsor read for the tip jar. A clean
 `git commit` becomes a routine 6-4-3 double play. A failing build is a runner gunned down at
