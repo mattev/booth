@@ -81,6 +81,13 @@ def _llm_raw(events, pack, memory, chatty, key, model):
         }],
         "messages": [{"role": "user", "content": _render(events, memory)}],
     }
+    data = _post(body, key)
+    text = "".join(b.get("text", "") for b in data.get("content", []))
+    return _parse(text), data.get("usage", {})
+
+
+def _post(body, key, timeout=20):
+    """POST a messages-API request and return the parsed JSON. Raises on transport errors."""
     req = urllib.request.Request(
         API_URL,
         data=json.dumps(body).encode(),
@@ -91,10 +98,45 @@ def _llm_raw(events, pack, memory, chatty, key, model):
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        data = json.loads(resp.read())
-    text = "".join(b.get("text", "") for b in data.get("content", []))
-    return _parse(text), data.get("usage", {})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read())
+
+
+MEMORY_SYS = (
+    "You keep a terse running 'story so far' for a booth calling a live coding session as a "
+    "baseball game. Given the previous summary and the latest plays, reply with an UPDATED "
+    "summary in 1-2 short sentences (max ~40 words), plain text only — no JSON, no preamble. "
+    "Always preserve the original ask and any notable wins (tests pass, build green) or errors "
+    "so the announcers can call back to them later."
+)
+
+
+def summarize(prev_memory, events, model=None):
+    """Fold the latest plays into a compact running memory string for callbacks.
+
+    Cheap Haiku call. Fails soft: returns the previous memory unchanged on any error or with
+    no key/events, so the rolling memory never breaks (or blocks) the daemon loop.
+    """
+    key = _resolve_key()
+    if not key or not events:
+        return prev_memory
+    plays = "\n".join(f"- {_desc(e)}" for e in events)
+    body = {
+        "model": model or MODEL_FAST,
+        "max_tokens": 160,
+        "system": MEMORY_SYS,
+        "messages": [{
+            "role": "user",
+            "content": f"Previous summary: {prev_memory or '(none yet)'}\n\n"
+                       f"Latest plays:\n{plays}\n\nUpdated summary:",
+        }],
+    }
+    try:
+        data = _post(body, key, timeout=15)
+    except (urllib.error.URLError, KeyError, ValueError, TimeoutError):
+        return prev_memory
+    text = "".join(b.get("text", "") for b in data.get("content", [])).strip()
+    return text[:400] or prev_memory
 
 
 def _parse(text):

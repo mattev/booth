@@ -21,6 +21,7 @@ MUTE = Path.home() / ".the-booth" / "muted"  # presence = muted (set by booth-ct
 
 def run() -> None:
     cursor = _count_lines(QUEUE)  # start at the tail; don't replay old events
+    memory = ""                   # rolling "game so far" — fed to commentary for callbacks
     while True:
         cfg = config.load()       # reload each loop so on/off/mute apply live
         if not cfg.enabled:
@@ -30,10 +31,14 @@ def run() -> None:
         if batch and not MUTE.exists() and not player.is_backed_up():
             beats = pacing.coalesce(batch)
             big = pacing.detect_big_moment(beats)
-            lines = commentary.call(beats, pack=cfg.pack, big_moment=big, chatty="lively")
+            lines = commentary.call(beats, pack=cfg.pack, memory=memory,
+                                    big_moment=big, chatty="lively")
             lines = sponsors.maybe_inject(lines, cfg)
             for line in lines:
                 player.enqueue(line, pack=cfg.pack, backend=cfg.tts_backend)
+            # Fold these plays into the story so the next call can reference them. The player
+            # speaks on its own thread, so this extra call doesn't create dead air.
+            memory = commentary.summarize(memory, beats)
         time.sleep(cfg.cadence)
 
 
