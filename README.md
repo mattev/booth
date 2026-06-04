@@ -4,9 +4,9 @@
 
 ### 🎧 Hear the booth in action
 
-<video src="https://github.com/mattev/booth/raw/main/assets/booth-demo-1.mp4" controls width="100%"></video>
+<video src="https://github.com/mattev/booth/raw/main/assets/booth-demo-2.mp4" controls width="100%"></video>
 
-> ▶️ If the player doesn't load, [**listen to the demo here**](https://github.com/mattev/booth/raw/main/assets/booth-demo-1.mp4) (or grab the [`.m4a`](assets/booth-demo-1.m4a)).
+> ▶️ If the player doesn't load, [**listen to the demo here**](https://github.com/mattev/booth/raw/main/assets/booth-demo-2.mp4).
 
 As you work, a baseball broadcast crew narrates the action out loud — melodic play-by-play,
 dry color commentary, and the occasional in-character sponsor read for the tip jar. A clean
